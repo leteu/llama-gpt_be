@@ -9,28 +9,33 @@ router.get('/', async (req, res, next) => {
 
   if (!prompt) return res.sendStatus(500)
 
-  const result = await axios.request<Readable>(
-    {
-      method: 'POST',
-      url: 'http://localhost:11434/api/generate',
-      data: {
-        model: 'llama2',
-        prompt,
-      },
-      responseType: 'stream',
-    }
-  )
+  try {
+    const result = await axios.request<Readable>(
+      {
+        method: 'POST',
+        url: 'http://127.0.0.1:11434/api/generate',
+        data: {
+          model: 'llama2',
+          prompt,
+        },
+        responseType: 'stream',
+      }
+    )
+    result.data.on('data', (chunk) => {
+      res.write(chunk)
 
-  result.data.on('data', (chunk) => {
-    res.write(chunk)
+      const parseJson = JSON.parse(chunk.toString('utf8'))
+      if (parseJson.done) {
+        res.end()
+        next()
+        return
+      }
+    })
+  } catch (e) {
+    console.log(e)
+  }
 
-    const parseJson = JSON.parse(chunk.toString('utf8'))
-    if (parseJson.done) {
-      res.end()
-      next()
-      return
-    }
-  })
+
 
   // const txt = await readStreamChunk(result)
 
