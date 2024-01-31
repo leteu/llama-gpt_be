@@ -13,7 +13,7 @@ router.get('/', async (req, res, next) => {
     const result = await axios.request<Readable>(
       {
         method: 'POST',
-        url: 'http://127.0.0.1:11434/api/generate',
+        url: 'http://0.0.0.0:11434/api/generate',
         data: {
           model: 'llama2',
           prompt,
@@ -25,6 +25,7 @@ router.get('/', async (req, res, next) => {
       res.write(chunk)
 
       const parseJson = JSON.parse(chunk.toString('utf8'))
+
       if (parseJson.done) {
         res.end()
         next()
@@ -34,8 +35,6 @@ router.get('/', async (req, res, next) => {
   } catch (e) {
     console.log(e)
   }
-
-
 
   // const txt = await readStreamChunk(result)
 

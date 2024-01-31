@@ -4,7 +4,7 @@ import cors from 'cors'
 
 import { router } from 'router'
 
-const port = 8080
+const port = 4000
 
 const app = express()
 const server = http.createServer(app)
